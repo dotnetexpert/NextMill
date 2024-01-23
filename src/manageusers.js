@@ -28,7 +28,6 @@ function ManageUsers() {
   };
 
   const handleDelete = async () => {
-    debugger;
     try {
       if (selectedUserIndex !== null) {
         const userIdToDelete = users[selectedUserIndex].Id;
@@ -67,7 +66,6 @@ function ManageUsers() {
 
   const fetchData = async () => {
     try {
-      debugger;
       // console.log("apiUrl",apiUrl)
       const token = localStorage.getItem("token");
       const response = await axios.get(`${apiUrl}/getUsers`, {
@@ -99,7 +97,6 @@ function ManageUsers() {
   ];
 
   const handleEditUser = (userId, user) => {
-    debugger;
     setEditingUser(user);
     setModalOpen(true);
     // Perform the action you want when the edit icon is clicked
