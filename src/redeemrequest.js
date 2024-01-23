@@ -24,7 +24,6 @@ function RedeemRequest() {
 
   const fetchRedeemRequests = async () => {
     try {
-      debugger;
       const token = localStorage.getItem("token");
       const response = await axios.get("https://dev.nexmil.app/redeemRequest", {
         headers: {
@@ -41,7 +40,6 @@ function RedeemRequest() {
 
   const handleStatusChange = async (redeem_Id, value) => {
     try {
-      debugger;
       setLoading(true);
       if (selectedStatus === "Approve" ) {
       
