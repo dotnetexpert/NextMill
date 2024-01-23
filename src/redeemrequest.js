@@ -20,7 +20,7 @@ function RedeemRequest() {
 
   useEffect(() => {
     fetchRedeemRequests();
-  }, []);
+  },  [selectedStatus]);
 
   const fetchRedeemRequests = async () => {
     try {
@@ -32,6 +32,7 @@ function RedeemRequest() {
         },
       });
       setRedeemRequests(response.data);
+      setSelectedStatus(response.data[0].RequestStatus);
     } catch (error) {
       console.error("Error fetching redeem requests:", error);
     }
@@ -42,7 +43,8 @@ function RedeemRequest() {
     try {
       debugger;
       setLoading(true);
-      if (selectedStatus === "Approve") {
+      if (selectedStatus === "Approve" ) {
+      
         setLoading(false);  
         return;  
       }
@@ -65,7 +67,6 @@ function RedeemRequest() {
      
 
       setSelectedStatus(value);
-      
       setLoading("");}
     catch (error) {
       console.error("Error updating status:", error);
@@ -121,6 +122,7 @@ function RedeemRequest() {
                                       selection
                                       options={statusOptions}
                                       value={selectedStatus}
+                                       disabled={selectedStatus === "Approve"} 
                                       onChange={(event, data) =>
                                         handleStatusChange(
                                           request.id,
