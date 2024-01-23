@@ -49,6 +49,7 @@ function ManageUsers() {
           toastr.success(`Success: ${response.data.message }`);
          
         }
+        setDeleteModalOpen(false);
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.Id !== userIdToDelete)
         );
