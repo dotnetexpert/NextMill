@@ -203,7 +203,7 @@ function Referrals() {
         const token = localStorage.getItem("token");
 
         const response = await axios.delete(
-          `${apiUrl}/deleteReferral?referral_Id=${userIdToDelete}`,
+          `${apiUrl}/deleteReferral?referral_id=${userIdToDelete}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
