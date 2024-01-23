@@ -45,7 +45,10 @@ function ManageUsers() {
         );
 
         console.log(JSON.stringify(response.data));
-
+       if (response.status== 200) {
+          toastr.success(`Success: ${response.data.message }`);
+         
+        }
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.Id !== userIdToDelete)
         );
