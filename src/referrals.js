@@ -24,7 +24,7 @@ function Referrals() {
 
   const getUsersList = async () => {
     try {
-      debugger;
+
       // console.log("apiUrl",apiUrl)
       const token = localStorage.getItem("token");
       const response = await axios.get(`${apiUrl}/getUsers`, {
@@ -137,7 +137,7 @@ function Referrals() {
   };
   const handleSaveEditRef = async () => {
     try {
-      debugger
+
       const isError = validateReferralData();
 
       if (isError) {
@@ -181,7 +181,7 @@ function Referrals() {
   };
   
   const handleEditUser = (userId, user) => {
-    debugger;
+
     setReferrals(user);
     setModalOpen(true);
     // Perform the action you want when the edit icon is clicked
@@ -196,14 +196,14 @@ function Referrals() {
   const handleDeleteUser = async () => {
 
     try {
-      debugger
+     
       if (selectedUserIndex !== null) {
         const userIdToDelete = users[selectedUserIndex].id;
 
         const token = localStorage.getItem("token");
 
         const response = await axios.delete(
-          `${apiUrl}/deleteReferral?referral_id=${userIdToDelete}`,
+          `${apiUrl}/deleteReferral?referral_Id=${userIdToDelete}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
