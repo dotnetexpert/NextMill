@@ -4,107 +4,147 @@ import { Dropdown } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import DashboardHeader from "./dashboardHeader";
 import TopHeader from "./topHeader";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
 const statusOptions = [
   { key: "approve", text: "Approve", value: "Approve" },
+  { key: "pending", text: "Pending", value: "Pending" },
   { key: "decline", text: "Decline", value: "Decline" },
 ];
-
 function RedeemRequest() {
+  const [redeemRequests, setRedeemRequests] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchRedeemRequests();
+  }, []);
+
+  const fetchRedeemRequests = async () => {
+    try {
+      debugger;
+      const token = localStorage.getItem("token");
+      const response = await axios.get("https://dev.nexmil.app/redeemRequest", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setRedeemRequests(response.data);
+    } catch (error) {
+      console.error("Error fetching redeem requests:", error);
+    }
+  };
+  // frontend.js
+
+  const handleStatusChange = async (redeem_Id, value) => {
+    try {
+      debugger;
+      setLoading(true);
+      if (selectedStatus === "Approve") {
+        setLoading(false);  
+        return;  
+      }
+  
+     
+      const token = localStorage.getItem("token");
+
+      const response = await axios.put(
+        `https://dev.nexmil.app/redeemRequest?redeem_Id=${redeem_Id}`,
+        {
+          Status: value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    
+     
+
+      setSelectedStatus(value);
+      
+      setLoading("");}
+    catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   return (
     <div className="container-fluid">
       <div className="vh-100">
-          <div className="main_dashboard h-100">
-            <div className="row">
-              <div className="ui bottom attached segment pushable main_dashboardContent">
-                <DashboardHeader/>
-                {/* <div
-                  className="ui visible inverted left vertical sidebar menu" style={{ width: "280px", }}
-                >
-                  <a className="logo_item">
-                    <img src="../../dashboard_logo.png" alt="logo" />
-                  </a>
-                  <div className="dashboard_links">
-                      <Link to="/dashboard" className="item">
-                        Dashboard
-                      </Link>
-                      <Link to="/manageusers" className="item">
-                        Manage Users
-                      </Link>
-                      <Link to="/referrals" className="item">
-                        Referrals
-                      </Link>
-                      <Link to="/redeemrequest" className="item">
-                        Redeem Request
-                      </Link>
-                  </div>
-                </div> */}
-                <div className="pusher dashboard_rightSide">
-                <TopHeader/>
-                  <div className="page-content">
-                      <div className="row">
-                          <div className="col-sm-12">
-                            <div className="card_title_heading">
-                                <h3>Redeem Request</h3>
-                              </div>
-                          </div>
-                      </div>
+        <div className="main_dashboard h-100">
+          <div className="row">
+            <div className="ui bottom attached segment pushable main_dashboardContent">
+              <DashboardHeader />
 
-                      <div className="row">
-                      <div className="col-sm-12">
-                        <div  className="table-container theme_table">
-                          <table className="ui celled table table-borderless" >
-                              <thead>
-                                <tr>
-                                  <th>First Name</th>
-                                  <th>Last Name</th>
-                                  <th>Product Request</th>
-                                  <th>Coin Amount</th>
-                                  <th style={{ width: '180px' }}></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td style={{ height: "40px" }}>John</td>
-                                  <td style={{ height: "40px" }}>Doe</td>
-                                  <td style={{ height: "40px" }}>White Hat</td>
-                                  <td style={{ height: "40px" }}>50</td>
-                                  <td>
-                                    <div className="text-right">
-                                        <Dropdown
-                                          placeholder="Select Action"
-                                          fluid
-                                          selection
-                                          options={statusOptions}
-                                        />
-                                    </div>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td style={{ height: "40px" }}>Emma</td>
-                                  <td style={{ height: "40px" }}>Wastson</td>
-                                  <td style={{ height: "40px" }}>Guest</td>
-                                  <td style={{ height: "40px" }}>550</td>
-                                  <td>
-                                     <div className="text-right">
-                                        <Dropdown
-                                          placeholder="Select Action"
-                                          fluid
-                                          selection
-                                          options={statusOptions}
-                                        />
-                                       </div>
-                                  </td>
-                                </tr>
-                              </tbody>
-                           </table>
-                        </div>
-                        </div>
+              <div className="pusher dashboard_rightSide">
+                <TopHeader />
+                <div className="page-content">
+                  <div className="row">
+                    <div class="col-sm-12">
+                      <div class="card_title_heading">
+                        <h3>Redeem Request</h3>
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-sm-12">
+                      <div className="table-container theme_table">
+                        <table className="ui celled table table-borderless">
+                          <thead>
+                            <tr>
+                              <th>First Name</th>
+                              <th>Last Name</th>
+                              <th>Product Request</th>
+                              <th>Coin Amount</th>
+                              <th>RequestStatus</th>
+                              <th style={{ width: "180px" }}></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {redeemRequests.map((request) => (
+                              <tr key={request.id}>
+                                <td>{request.FirstName}</td>
+                                <td>{request.LastName}</td>
+                                <td>{request.ProductRequest}</td>
+                                <td>{request.CoinAmount}</td>
+
+                                <td>
+                                  <div className="text-right">
+                                    <Dropdown
+                                      placeholder={request.RequestStatus}
+                                      fluid
+                                      selection
+                                      options={statusOptions}
+                                      value={selectedStatus}
+                                      onChange={(event, data) =>
+                                        handleStatusChange(
+                                          request.id,
+                                          data.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {loading && (
+                          <img src="Spinner-1s-200px.svg" alt="Loading" />
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

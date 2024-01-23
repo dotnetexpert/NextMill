@@ -46,7 +46,9 @@
     justify-content: flex-start;
     align-items: center;
   }
-  
+  .page-content {
+    padding: 120px 25px;
+}
   /* Total Users text styles */
   /* .total-users-text {
     font-size: 16px;

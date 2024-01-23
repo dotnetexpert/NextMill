@@ -89,7 +89,7 @@ function Dashboard() {
      
       const token = localStorage.getItem("token");
       // Make a request to your backend API with the authentication token
-      const response = await axios.get("http://3.97.216.105:3000/all-users", {
+      const response = await axios.get("https://dev.nexmil.app/all-users", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -109,7 +109,7 @@ function Dashboard() {
     debugger;
     try {
       const token = localStorage.getItem( 'token');
-      const response = await axios.get('http://3.97.216.105:3000/monthly-referrals', {
+      const response = await axios.get('https://dev.nexmil.app/monthly-referrals', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -125,11 +125,7 @@ function Dashboard() {
   
   const categoriesArray =chartData?.map((item)=>item.month);
   const dataArray=chartData?.map((item)=>item.count);
-// const janData= chartData?.map((item)=>item.January);
-// const febData= chartData?.map((item)=>item.February);
-// const marData= chartData?.map((item)=>item.March);
 
-//dataArray=[...janData,...febData,...marData];
 
   const columnChartOptions = {
     chart: {
@@ -143,15 +139,7 @@ function Dashboard() {
     },
     xAxis: {
       categories: categoriesArray,
-      // [
-      //   "January",
-      //   "February",
-      //   "March",
-      //   // "April",
-      //   // "May",
-      //   // "June",
-      //   // "July",
-      // ],
+     
       lineWidth:0,
     },
     yAxis: {
@@ -164,6 +152,7 @@ function Dashboard() {
       },
       visible: false, 
     },
+    legend: false,
 
     colors: ["#0000FF"],
     series: [
@@ -171,7 +160,7 @@ function Dashboard() {
         dataLabels: {
           enabled: true,
         },
-        name:null,
+        name:"",
       
         data: dataArray,
       },

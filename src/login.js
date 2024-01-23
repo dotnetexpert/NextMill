@@ -30,7 +30,7 @@ function Login() {
       // Clear the email and password errors if they were previously set
       setEmailError("");
       setPasswordError("");
-      const response = await axios.post("http://3.97.216.105:3000/login", {
+      const response = await axios.post("https://dev.nexmil.app/login", {
         Email: email,
         password: password,
       });
