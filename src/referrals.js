@@ -331,7 +331,7 @@ function Referrals()
                                 <td>
                                   <input
                                     type="checkbox"
-                                    style={{ width: "13px", height: "13px", margin-right: "4px" }}
+                                    style={{ width: "13px", height: "13px", marginRight: "4px" }}
                                     checked={selectedUserIndex === index}
                                     onChange={() => handleCheckboxChange(index)}
                                   />
