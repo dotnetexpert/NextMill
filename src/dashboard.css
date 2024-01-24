@@ -1,70 +1,74 @@
 /* dashboard.css */
-.border0{
-  border:0;
+.border0 {
+  border: 0;
 }
-.bg-transparent{
-  background:transparent;
+
+.bg-transparent {
+  background: transparent;
 }
+
 /* Sidebar styles */
 .ui.visible.inverted.left.vertical.sidebar.menu {
-    width: 200px;
-  }
-  
-  /* Logout button style */
-  button.logout-button {
-    margin-left: 430px;
-    color: black;
-    font-weight: bold;
-  }
-  
-  /* Box styles */
-  .box {
-    margin-right: 120px;
-  }
-  
-  /* Box 1 with Highcharts styles */
-  .box-1 {
-    width: 65%;
-    height: 200px;
-    background-color: #f0f0f0;
-    margin-bottom: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-  }
-  
-  /* Box 2 styles */
-  .box-2 {
-    width: 56%;
-    height: 200px;
-    background-color: #f0f0f0;
-    margin-bottom: 20px;
-    margin-left: -35%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-  }
-  .page-content {
-    padding: 120px 25px;
+  width: 200px;
 }
-  /* Total Users text styles */
-  /* .total-users-text {
+
+/* Logout button style */
+button.logout-button {
+  margin-left: 430px;
+  color: black;
+  font-weight: bold;
+}
+
+/* Box styles */
+.box {
+  margin-right: 120px;
+}
+
+/* Box 1 with Highcharts styles */
+.box-1 {
+  width: 65%;
+  height: 200px;
+  background-color: #f0f0f0;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Box 2 styles */
+.box-2 {
+  width: 56%;
+  height: 200px;
+  background-color: #f0f0f0;
+  margin-bottom: 20px;
+  margin-left: -35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.page-content {
+  padding: 120px 25px;
+}
+
+/* Total Users text styles */
+/* .total-users-text {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 10px;
   } */
-  
-  /* Total Users data styles */
-  /* .total-users-data {
+
+/* Total Users data styles */
+/* .total-users-data {
     text-align: left;
     padding-left: 10px;
     font-size: 10px;
   }
    */
 
- /*
+/*
  
   .sidebar.menu {
     background: #dcebf3!important;
@@ -185,3 +189,33 @@ body .totalItemRedeem ul {
 .main_dashboardContent {
   border: 0!important;
 } */
+
+
+/*Modal*/
+.close_btn {
+  background: transparent;
+  border: 0;
+  height: inherit;
+  line-height: inherit;
+  font-size: 30px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  border: 0;
+}
+
+.loader_content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import {useState}  from "react";
+import { useState } from "react";
 import { Grid, GridRow, GridColumn } from "semantic-ui-react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
@@ -70,23 +70,26 @@ import TopHeader from "./topHeader";
 //   };
 // };
 
-function Dashboard() {
+function Dashboard()
+{
 
   const navigate = useNavigate();
   const [userCounts, setUserCounts] = useState({});
   const [chartData, setChartData] = useState([]);
 
-  useEffect(() => {
-    // Call the fetchData function when the component mounts
+  useEffect(() =>
+  {
+
     fetchData();
 
     fetchDatas();
-  }, []); // Empty dependency array ensures the effect runs only once on mount
+  }, []);
 
-  const fetchData = async () => {
-    try {
-      debugger;
-     
+  const fetchData = async () =>
+  {
+    try
+    {
+
       const token = localStorage.getItem("token");
       // Make a request to your backend API with the authentication token
       const response = await axios.get("https://dev.nexmil.app/all-users", {
@@ -100,31 +103,31 @@ function Dashboard() {
 
       // Update the state with the received data
       setUserCounts(userCountByMonth);
-    } catch (error) {
+    } catch (error)
+    {
       console.error("Error fetching user data:", error);
     }
   };
 
-  const fetchDatas = async () => {
-    debugger;
-    try {
-      const token = localStorage.getItem( 'token');
+  const fetchDatas = async () =>
+  {
+    try
+    {
+      const token = localStorage.getItem('token');
       const response = await axios.get('https://dev.nexmil.app/monthly-referrals', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.resultArray);
-      debugger;
       setChartData(response.data.resultArray);
-      debugger;
-    } catch (error) {
+    } catch (error)
+    {
       console.error('Error fetching data from API:', error);
     }
   };
-  
-  const categoriesArray =chartData?.map((item)=>item.month);
-  const dataArray=chartData?.map((item)=>item.count);
+
+  const categoriesArray = chartData?.map((item) => item.month);
+  const dataArray = chartData?.map((item) => item.count);
 
 
   const columnChartOptions = {
@@ -139,18 +142,18 @@ function Dashboard() {
     },
     xAxis: {
       categories: categoriesArray,
-     
-      lineWidth:0,
+
+      lineWidth: 0,
     },
     yAxis: {
       stackLabels: {
         enabled: true,
       },
-     // tickPositions: [10, 20, 30, 40, 50],
+      // tickPositions: [10, 20, 30, 40, 50],
       title: {
         text: "",
       },
-      visible: false, 
+      visible: false,
     },
     legend: false,
 
@@ -160,8 +163,8 @@ function Dashboard() {
         dataLabels: {
           enabled: true,
         },
-        name:"",
-      
+        name: "",
+
         data: dataArray,
       },
     ],
@@ -171,9 +174,9 @@ function Dashboard() {
     <div className="container-fluid">
       <div className="vh-100">
         <div className="main_dashboard h-100">
-            <div className="row">
-              <div className="ui bottom attached segment pushable main_dashboardContent">
-                {/* <div
+          <div className="row">
+            <div className="ui bottom attached segment pushable main_dashboardContent">
+              {/* <div
                   className="ui visible inverted left vertical sidebar menu" style={{ width: "280px", }}
                 >
                   <a className="logo_item">
@@ -194,128 +197,128 @@ function Dashboard() {
                       </Link>
                   </div>
                 </div> */}
-<DashboardHeader/>
+              <DashboardHeader />
 
-                <div className="pusher dashboard_rightSide">
+              <div className="pusher dashboard_rightSide">
 
-                 <TopHeader/>
-                  <div className="page-content">
-                    <div className="">
-                       <div className="row">
-                          <div className="col-sm-6">
-                            <div className="card card-height-100 grid-margin bg-grey border0">
-                                <div className="card_title_heading">
-                                   <h3>Monthly Referrals</h3>
-                                </div>
-                                <div className="card-body">
-                                  <div className="d-flex justify-content-center">
-                                      <HighchartsReact
-                                        highcharts={Highcharts}
-                                        options={columnChartOptions}
-                                      />
-                                      </div>
-                                </div>
-                              </div>
+                <TopHeader />
+                <div className="page-content">
+                  <div className="">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <div className="card card-height-100 grid-margin bg-grey border0">
+                          <div className="card_title_heading">
+                            <h3>Monthly Referrals</h3>
                           </div>
-                          <div className="col-sm-6">
-                            <div className="card card-height-100 grid-margin bg-grey border0">
-                                <div className="card_title_heading">
-                                   <h3>Total Users</h3>
-                                </div>
-                                <div className="card-body">
-                                   <div className="total-users-data">
-                                          <ul className="cal_center">
-                                          {Object.entries(userCounts).map(
-                            ([monthYear, count]) => (
-                              <li key={monthYear} className="m-1">
-                                <span>{monthYear}</span>{" "}
-                                <span className="number" style={{ color: "blue" }}>
-                                  {count}
-                                </span>
-                              </li>
-                            )
-                          )}         </ul>
-                                      </div>
-                                </div>
-                              </div>
+                          <div className="card-body">
+                            <div className="d-flex justify-content-center">
+                              <HighchartsReact
+                                highcharts={Highcharts}
+                                options={columnChartOptions}
+                              />
+                            </div>
                           </div>
                         </div>
-
-                        <div className="row">
-                          <div className="col-sm-6">
-                            <div className="card card-height-100 grid-margin bg-grey border0 totalItemRedeem">
-                                <div className="card_title_heading">
-                                   <h3>Total Item Redeemed</h3>
-                                </div>
-                                <div className="card-body">
-                                  <div className="total-users-data">
-                                     <ul className="">
-                                        <li>
-                                          <span className="f16"><b>July 2023</b></span>
-                                        </li>
-                                        <li>
-                                          <span>White Bucket Hat</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>11</span>
-                                        </li>
-                                        <li>
-                                          <span>Black Bucket Hat</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>6</span>
-                                        </li>
-                                        <li>
-                                          <span>Toronto Maple Leals Jersay</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>9</span>
-                                        </li>
-                                        <li>
-                                          <span>Toronto Blue Jays Hat</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>3</span>
-                                        </li>
-                                      </ul>
-                                   </div>
-                                </div>
-                              </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="card card-height-100 grid-margin bg-grey border0">
+                          <div className="card_title_heading">
+                            <h3>Total Users</h3>
                           </div>
-                          <div className="col-sm-6">
-                            <div className="card card-height-100 grid-margin bg-grey border0">
-                                <div className="card_title_heading">
-                                   <h3>Total product Redeemed</h3>
-                                </div>
-                                <div className="card-body">
-                                   <div className="total-users-data">
-                                     <ul className="cal_center">
-                                        <li>
-                                          <span>July 2023</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>23</span>
-                                        </li>
-                                        <li>
-                                          <span>Aug 2023</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>24</span>
-                                        </li>
-                                        <li>
-                                          <span>Sept 2023</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>26</span>
-                                        </li>
-                                        <li>
-                                          <span>Oct 2023</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>28</span>
-                                        </li>
-                                        <li>
-                                          <span>Nov 2023</span>
-                                          <span className="number" style={{ color: "#0b44ff" }}>30</span>
-                                        </li>
-                                      </ul>
-                                   </div>
-                                </div>
-                              </div>
+                          <div className="card-body">
+                            <div className="total-users-data">
+                              <ul className="cal_center">
+                                {Object.entries(userCounts).map(
+                                  ([monthYear, count]) => (
+                                    <li key={monthYear} className="m-1">
+                                      <span>{monthYear}</span>{" "}
+                                      <span className="number" style={{ color: "blue" }}>
+                                        {count}
+                                      </span>
+                                    </li>
+                                  )
+                                )}         </ul>
+                            </div>
                           </div>
                         </div>
-
-
-
+                      </div>
                     </div>
+
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <div className="card card-height-100 grid-margin bg-grey border0 totalItemRedeem">
+                          <div className="card_title_heading">
+                            <h3>Total Item Redeemed</h3>
+                          </div>
+                          <div className="card-body">
+                            <div className="total-users-data">
+                              <ul className="">
+                                <li>
+                                  <span className="f16"><b>July 2023</b></span>
+                                </li>
+                                <li>
+                                  <span>White Bucket Hat</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>11</span>
+                                </li>
+                                <li>
+                                  <span>Black Bucket Hat</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>6</span>
+                                </li>
+                                <li>
+                                  <span>Toronto Maple Leals Jersay</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>9</span>
+                                </li>
+                                <li>
+                                  <span>Toronto Blue Jays Hat</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>3</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="card card-height-100 grid-margin bg-grey border0">
+                          <div className="card_title_heading">
+                            <h3>Total product Redeemed</h3>
+                          </div>
+                          <div className="card-body">
+                            <div className="total-users-data">
+                              <ul className="cal_center">
+                                <li>
+                                  <span>July 2023</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>23</span>
+                                </li>
+                                <li>
+                                  <span>Aug 2023</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>24</span>
+                                </li>
+                                <li>
+                                  <span>Sept 2023</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>26</span>
+                                </li>
+                                <li>
+                                  <span>Oct 2023</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>28</span>
+                                </li>
+                                <li>
+                                  <span>Nov 2023</span>
+                                  <span className="number" style={{ color: "#0b44ff" }}>30</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+
                   </div>
                 </div>
               </div>
             </div>
+          </div>
         </div>
       </div>
     </div>

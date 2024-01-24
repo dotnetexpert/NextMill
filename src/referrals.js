@@ -1,14 +1,16 @@
 import "semantic-ui-css/semantic.min.css";
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Form, Dropdown } from "semantic-ui-react";
-import { Link } from "react-router-dom";
 import DashboardHeader from "./dashboardHeader";
 import TopHeader from "./topHeader";
 import axios from "axios";
 import toastr from 'toastr';
 import 'toastr/build/toastr.css';
+import { useNavigate } from "react-router-dom";
 
-function Referrals() {
+function Referrals()
+{
+  const navigate = useNavigate();
   const apiUrl = "https://dev.nexmil.app";
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -17,15 +19,14 @@ function Referrals() {
   const [selectedUserIndex, setSelectedUserIndex] = useState(null);
   const [users, setUsers] = useState([]);
   const [usersList, setUsersList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState(false);
 
-
-
-  const getUsersList = async () => {
-    try {
-
-      // console.log("apiUrl",apiUrl)
+  const getUsersList = async () =>
+  {
+    try
+    {
       const token = localStorage.getItem("token");
       const response = await axios.get(`${apiUrl}/getUsers`, {
         headers: {
@@ -33,171 +34,211 @@ function Referrals() {
         },
       });
 
-      console.log(JSON.stringify(response.data));
-      // setUsers(response.data);
       const data = response.data.map((user) => ({
         key: user.Id,
         value: `${user.FirstName} ${user.LastName}`,
         text: `${user.FirstName} ${user.LastName}`, // Ensure you include the 'text' property for display
       }));
       setUsersList(data);
-      // console.log("data",data);
-      
-    } catch (error) {
+
+    } catch (error)
+    {
       console.error("Axios Error:", error);
     }
   };
 
 
-  const fetchData = async () => {
-    
-    try {
+  const fetchData = async () =>
+  {
+
+    try
+    {
+      setLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(`${apiUrl}/getReferrals`,  {
+      const response = await axios.get(`${apiUrl}/getReferrals`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log(JSON.stringify(response.data));
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Axios Error:", error);
+      if (response.status === 200)
+      {
+        setUsers(response.data);
+        setLoading(false);
+      }
+
+    } catch (error)
+    {
+      if (error?.response != null && (error?.response?.status === 401 || error?.response?.status === 403))
+      {
+        toastr.error(`${error?.response.data.message ?? error?.response?.data}`, '', { timeOut: 1000 });
+        navigate("/Login");
+      }
     }
   };
 
-  const handleCheckboxChange = (index) => {
+  const handleCheckboxChange = (index) =>
+  {
     setSelectedUserIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const handleOpen = () => {
+  const handleOpen = () =>
+  {
     setModalOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = () =>
+  {
     setReferrals(null);
 
     setModalOpen(false);
 
   }
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     fetchData();
-  },[]);
+  }, []);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     getUsersList();
-  },[modalOpen]);
+  }, [modalOpen]);
 
-  const validateReferralData = () => {
-    if (!addReferrals || !addReferrals.FirstName) {
+  const validateReferralData = () =>
+  {
+
+    let error = false;
+    if (!addReferrals || !addReferrals.FirstName)
+    {
       setErrors(true);
-      toastr.error('Error: First Name is required');
-      // return false;
+      error = true;
+      toastr.error('First Name is required', '', { timeOut: 1000 });
     }
-  
-    if (!addReferrals || !addReferrals.LastName) {
+
+    if (!addReferrals || !addReferrals.LastName)
+    {
       setErrors(true);
-      toastr.error('Error: Last Name is required');
-      // return false;
+      error = true;
+      toastr.error('Last Name is required', '', { timeOut: 1000 });
     }
-  
-    if (!addReferrals || !addReferrals.PhoneNumber) {
+
+    if (!addReferrals || !addReferrals.PhoneNumber)
+    {
       setErrors(true);
-      toastr.error('Error: PhoneNumber is required');
-      // return false;
+      error = true;
+      toastr.error('PhoneNumber is required', '', { timeOut: 1000 });
     }
-  
-    if (!addReferrals || !addReferrals.Notes) {
+
+    if (!addReferrals || !addReferrals.Notes)
+    {
       setErrors(true);
-      toastr.error('Error: Notes is required');
-      // return false;
+      error = true;
+      toastr.error('Notes is required', '', { timeOut: 1000 });
     }
-  
-    if (!addReferrals || !addReferrals.CoinRewards) {
+
+    if (!addReferrals || !addReferrals.CoinRewards)
+    {
       setErrors(true);
-      toastr.error('Error: CoinRewards is required');
-      // return false;
+      error = true;
+      toastr.error('CoinRewards is required', '', { timeOut: 1000 });
     }
-  
-    if (!addReferrals || !addReferrals.Status) {
+
+    if (!addReferrals && (!addReferrals.Status && addReferrals?.id !== undefined))
+    {
       setErrors(true);
-      toastr.error('Error: Status is required');
-      // return false;
+      error = true;
+      toastr.error('Status is required', '', { timeOut: 1000 });
     }
-  
-    if (!addReferrals || !addReferrals.ReferredBy) {
+
+    if (!addReferrals || !addReferrals.ReferredBy)
+    {
       setErrors(true);
-      toastr.error('Error: Referrals to is required');
-      // return false;
+      error = true;
+      toastr.error('Referrals to is required', '', { timeOut: 1000 });
+
     }
-  
-    return  errors ?? false; // Validation passed
+
+    return error ?? false;
   };
-  const handleSaveEditRef = async () => {
-    try {
 
+  const handleSaveEditRef = async () =>
+  {
+    try
+    {
       const isError = validateReferralData();
 
-      if (isError) {
+      if (isError)
+      {
+        // setReferrals(null);
         return;
       }
-        const data = {
-          FirstName: addReferrals.FirstName,
-          LastName: addReferrals.LastName,
-          PhoneNumber: addReferrals.PhoneNumber,
-          Notes: addReferrals.Notes,
-          ReferredBy: addReferrals.ReferredBy,
-          CoinRewards: addReferrals.CoinRewards,
-          Status: addReferrals.Id ?  addReferrals.Status:"Pending"
-        };
-  
-        const token = localStorage.getItem("token");
-        const url = addReferrals.Id ?`${apiUrl}/updateReferral?Id=${addReferrals.Id}`: `${apiUrl}/createReferrals`;
-  
-    
-  
-        const response = await axios.post(url, data, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-  
-        console.log(JSON.stringify(response.data));
-        if (response.status== 200) {
-          toastr.success(`Success: ${response.data.message }`);
-         
-        }
+      setLoading(true);
+
+      const data = {
+        FirstName: addReferrals.FirstName,
+        LastName: addReferrals.LastName,
+        PhoneNumber: addReferrals.PhoneNumber,
+        Notes: addReferrals.Notes,
+        ReferredBy: addReferrals.ReferredBy,
+        CoinRewards: addReferrals.CoinRewards,
+        Status: addReferrals.id ? addReferrals.Status : "Pending"
+      };
+
+      const token = localStorage.getItem("token");
+      const url = addReferrals?.id ? `${apiUrl}/updateReferral?Id=${addReferrals?.id}` : `${apiUrl}/createReferrals`;
+
+
+
+      const response = addReferrals?.id ? await axios.put(url, data, {
+        headers: { Authorization: `Bearer ${token}` },
+      }) : await axios.post(url, data, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.status === 200)
+      {
         setModalOpen(false);
-        fetchData();
-      
-    } catch (error) {
-      console.error("Save error:", error);
-      // Handle error, show a message, or perform other actions as needed
-      if (error?.response != null) {
-          
-        toastr.error(`Error: ${error?.response.data.message ?? error?.response?.data}`);
+        setLoading(false);
+        toastr.success(`${response.data.message}`, '', { timeOut: 1000 });
+
+      }
+      setReferrals(null);
+      setSelectedUserIndex(null);
+      fetchData();
+
+    } catch (error)
+    {
+      if (error?.response != null)
+      {
+        setLoading(false);
+        toastr.error(`${error?.response.data.message ?? error?.response?.data}`, '', { timeOut: 1000 });
       }
     }
   };
-  
-  const handleEditUser = (userId, user) => {
+
+  const handleEditUser = (userId, user) =>
+  {
 
     setReferrals(user);
     setModalOpen(true);
-    // Perform the action you want when the edit icon is clicked
-    console.log(`Editing user with ID: ${userId}`);
   };
   const handleDeleteModalOpen = () => setDeleteModalOpen(true);
 
-  const handleDeleteModalClose = () => {
+  const handleDeleteModalClose = () =>
+  {
     setDeleteModalOpen(false);
     setSelectedUserId(null);
   };
-  const handleDeleteUser = async () => {
+  const handleDeleteUser = async () =>
+  {
 
-    try {
-     
-      if (selectedUserIndex !== null) {
+    try
+    {
+      if (selectedUserIndex !== null)
+      {
+        setLoading(true);
+
         const userIdToDelete = users[selectedUserIndex].id;
 
         const token = localStorage.getItem("token");
@@ -211,146 +252,131 @@ function Referrals() {
           }
         );
 
-        console.log(JSON.stringify(response.data));
-       if (response?.status== 200) {
-          toastr.success(`Success: ${response.data.message }`);
-         
+        if (response.status === 200)
+        {
+          setDeleteModalOpen(false);
+          setLoading(false);
+          toastr.success(`${response.data.message}`, '', { timeOut: 1000 });
+
         }
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.id !== userIdToDelete)
         );
         setSelectedUserIndex(null);
         fetchData();
-      } else {
-        console.log("No user selected for deletion");
       }
-    } catch (error) {
-      console.error("Axios Error:", error);
-      if (error?.response != null) {
-          
-        toastr.error(`Error: ${error?.response.data.message ?? error?.response?.data}`);
+    } catch (error)
+    {
+      if (error?.response != null)
+      {
+        setLoading(false);
+        toastr.error(`${error?.response.data.message ?? error?.response?.data},'', { timeOut: 1000 }`);
       }
-      else{
-        toastr.error(`Error: ${error}`)
+      else
+      {
+        setLoading(false);
+        toastr.error(`${error}`, '', { timeOut: 1000 })
       }
-      fetchData();
     }
-    handleDeleteModalClose();
   };
 
   return (
     <div className="container-fluid">
-       <div className="vh-100">
-         <div className="main_dashboard h-100">
-           <div className="row">
-              <div className="ui bottom attached segment pushable main_dashboardContent">
-                <DashboardHeader/>
-                {/* <div
-                  className="ui visible inverted left vertical sidebar menu" style={{ width: "280px", }}
-                >
-                  <a className="logo_item">
-                    <img src="../../dashboard_logo.png" alt="logo" />
-                  </a>
-                  <div className="dashboard_links">
-                      <Link to="/dashboard" className="item">
-                        Dashboard
-                      </Link>
-                      <Link to="/manageusers" className="item">
-                        Manage Users
-                      </Link>
-                      <Link to="/referrals" className="item">
-                        Referrals
-                      </Link>
-                      <Link to="/redeemrequest" className="item">
-                        Redeem Request
-                      </Link>
-                  </div>
-               </div> */}
+      <div className="vh-100">
+        <div className="main_dashboard h-100">
+          <div className="row">
+            <div className="ui bottom attached segment pushable main_dashboardContent">
+              <DashboardHeader />
               <div className="pusher dashboard_rightSide">
-              <TopHeader/>
-                  <div className="page-content">
-                      <div className="row">
-                        <div class="col-sm-12">
-                          <div class="card_title_heading">
-                              <h3>Referrals</h3>
-                            </div>
-                        </div>
+                <TopHeader />
+                <div className="page-content">
+                  <div className="row">
+                    <div class="col-sm-12">
+                      <div class="card_title_heading">
+                        <h3>Referrals</h3>
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="row">
-                          <div class="col-sm-12">
-                            <div class="text-right top_btn">
-                                <div class="d-flex gap-x-2 justify-content-end">
-                                      <button onClick={handleOpen} class="rounded-pill btn btn-primary btn-xs m120" >Add New Referrals</button>
-                                      <button onClick={handleDeleteModalOpen} class="rounded-pill btn btn-danger btn-xs m120"  disabled={selectedUserIndex === null}>Delete Referrals</button>
-                                </div>
-                            </div>
-                          </div>
-                      </div>
-                  
-                    <div className="row">
-                      <div className="col-sm-12">
-                        <div  className="table-container theme_table">
-                          <table className="ui celled table table-borderless" >
-                            <thead>
-                              <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Phone #</th>
-                                <th>Notes</th>
-                                <th>Status</th>
-                                <th>ReferredBy</th>
-                                <th>CoinRewards</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                            {users.map((user, index) => (
-                          <tr key={index}>
-                            <td>
-                              <input
-                                type="checkbox"
-                                style={{ width: "13px", height: "13px" }}
-                                checked={selectedUserIndex === index}
-                                onChange={() => handleCheckboxChange(index)}
-                              />
-                              {user.FirstName}
-                            </td>
-                            <td>{user.LastName}</td>
-                            <td>{user.PhoneNumber}</td>
-                            <td>{user.Notes}</td>
-                            <td>{user.Status}</td>
-                            <td>{user.ReferredBy}</td>
-                            <td>{user.CoinRewards}</td>
-
-
-                            <td>
-                              <button
-                                onClick={() => handleEditUser(user.id, user)}
-                                style={{
-                                  backgroundColor: "transparent",
-                                  border: "none",
-                                }}
-                              >
-                                <i className="fas fa-edit"></i>
-                              </button>
-                            </td>
-                            <td></td>
-                          </tr>
-                        ))}
-                            </tbody>
-                          </table>
+                  <div className="row">
+                    <div class="col-sm-12">
+                      <div class="text-right top_btn">
+                        <div class="d-flex gap-x-2 justify-content-end">
+                          <button onClick={handleOpen} class="rounded-pill btn btn-primary btn-xs m120" >Add New Referrals</button>
+                          <button onClick={handleDeleteModalOpen} class="rounded-pill btn btn-danger btn-xs m120" disabled={selectedUserIndex === null}>Delete Referrals</button>
                         </div>
                       </div>
                     </div>
-                     
                   </div>
-              </div>
-              </div>
-        </div>
-        </div>
-     </div>
 
+                  <div className="row">
+                    <div className="col-sm-12">
+                      <div className="table-container theme_table">
+                        <table className="ui celled table table-borderless" >
+                          <thead>
+                            <tr>
+                              <th>First Name</th>
+                              <th>Last Name</th>
+                              <th>Phone #</th>
+                              <th>Notes</th>
+                              <th>Status</th>
+                              <th>ReferredBy</th>
+                              <th>CoinRewards</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {users.map((user, index) => (
+                              <tr key={index}>
+                                <td>
+                                  <input
+                                    type="checkbox"
+                                    style={{ width: "13px", height: "13px" }}
+                                    checked={selectedUserIndex === index}
+                                    onChange={() => handleCheckboxChange(index)}
+                                  />
+                                  {user.FirstName}
+                                </td>
+                                <td>{user.LastName}</td>
+                                <td>{user.PhoneNumber}</td>
+                                <td>{user.Notes}</td>
+                                <td>{user.Status}</td>
+                                <td>{user.ReferredBy}</td>
+                                <td>{user.CoinRewards}</td>
+
+
+                                <td>
+                                  <button
+                                    onClick={() => handleEditUser(user.id, user)}
+                                    style={{
+                                      backgroundColor: "transparent",
+                                      border: "none",
+                                    }}
+                                    disabled={selectedUserIndex !== index}
+                                  >
+                                    <i className="fas fa-edit"></i>
+                                  </button>
+                                </td>
+                                <td></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {loading && (
+        <div className="loader_content">
+          <img src="Spinner-1s-200px.svg" alt="Loading" />
+        </div>
+      )}
       <Modal
         open={modalOpen}
         onClose={handleClose}
@@ -361,64 +387,67 @@ function Referrals() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "650px",
+          width: "550px",
           margin: "auto",
           maxHeight: "90%",
-          height:"auto",
+          height: "auto",
         }}
       >
-        <Modal.Header>
-        
-        <span>{addReferrals?.id ==null ?"Add Referrals ":"Edit Referrals"}</span>
 
-        <button onClick={handleClose} style={{float: 'right'}}>
-          &times; 
-        </button>   
+        <Modal.Header>
+          <div className="modal-header">
+            <span>{addReferrals?.id === undefined ? "Add Referrals " : "Edit Referrals"}</span>
+            <button className="close_btn" onClick={handleClose} style={{ float: 'right' }}>
+              &times;
+            </button>
+          </div>
+
         </Modal.Header>
-        
+
         <Modal.Content>
           <Form>
             <Form.Field>
               <label>First Name</label>
               <input placeholder="First Name"
-              value={addReferrals ? addReferrals.FirstName : ""}
-              // Update the value of the input with the corresponding user data
-              onChange={(e) =>
-                setReferrals({ ...addReferrals, FirstName: e.target.value })
-              }
-               />
+                value={addReferrals ? addReferrals.FirstName : ""}
+                // Update the value of the input with the corresponding user data
+                onChange={(e) =>
+                  setReferrals({ ...addReferrals, FirstName: e.target.value })
+                }
+              />
             </Form.Field>
             <Form.Field>
               <label>Last Name</label>
-              <input placeholder="Last Name" 
-              value={addReferrals ? addReferrals.LastName : ""}
-              // Update the value of the input with the corresponding user data
-              onChange={(e) =>
-                setReferrals({ ...addReferrals, LastName: e.target.value })
-              }
+              <input placeholder="Last Name"
+                value={addReferrals ? addReferrals.LastName : ""}
+                // Update the value of the input with the corresponding user data
+                onChange={(e) =>
+                  setReferrals({ ...addReferrals, LastName: e.target.value })
+                }
               />
             </Form.Field>
             <Form.Field>
               <label>Phone #</label>
               <input placeholder="Phone #"
-              value={addReferrals ? addReferrals.PhoneNumber : ""}
-              // Update the value of the input with the corresponding user data
-              onChange={(e) =>
-                setReferrals({ ...addReferrals, PhoneNumber: e.target.value })
-              }
-               />
+                maxLength={10}
+                value={addReferrals ? addReferrals.PhoneNumber : ""}
+                // Update the value of the input with the corresponding user data
+                onChange={(e) =>
+                  setReferrals({ ...addReferrals, PhoneNumber: (/^[0-9]*$/.test(e.target.value)) ? e.target.value : '' })
+                }
+              />
             </Form.Field>
             <Form.Field>
               <label>Notes</label>
-              <input placeholder="Notes" 
-               value={addReferrals ? addReferrals.Notes : ""}
-               // Update the value of the input with the corresponding user data
-               onChange={(e) =>
-                 setReferrals({ ...addReferrals, Notes: e.target.value })
-               }
-               />
+              <input placeholder="Notes"
+                value={addReferrals ? addReferrals.Notes : ""}
+                // Update the value of the input with the corresponding user data
+                onChange={(e) =>
+                  setReferrals({ ...addReferrals, Notes: e.target.value })
+                }
+              />
             </Form.Field>
-            {addReferrals?.id !== undefined &&<Form.Field>
+            {addReferrals?.id !== undefined && <Form.Field>
               <label>Status</label>
               <Dropdown
                 placeholder="Select Status"
@@ -426,8 +455,8 @@ function Referrals() {
                 selection
                 options={[
                   { key: "pending", text: "Pending", value: "Pending" },
-                 { key: "approved", text: "Approved", value: "Approved" },
-                 { key: "disapproved", text: "Disapproved", value: "Disapproved" },
+                  { key: "approved", text: "Approved", value: "Approved" },
+                  { key: "disapproved", text: "Disapproved", value: "Disapproved" },
 
                 ]}
                 value={addReferrals ? addReferrals.Status : ""}
@@ -443,7 +472,7 @@ function Referrals() {
                 fluid
                 selection
                 options={usersList}
-                // value={addReferrals ? addReferrals.AccountType : ""}
+                value={addReferrals ? addReferrals?.ReferredBy : ""}
                 onChange={(e, { value }) =>
                   setReferrals({ ...addReferrals, ReferredBy: value })
                 }
@@ -452,24 +481,25 @@ function Referrals() {
             <Form.Field>
               <label>Events=coln Rewards</label>
               <input placeholder="VIP"
-              type="number"
-              value={addReferrals ? addReferrals.CoinRewards : ""}
-              // Update the value of the input with the corresponding user data
-              onChange={(e) =>
-                setReferrals({ ...addReferrals, CoinRewards: e.target.value })
-              }
-               />
+                type="number"
+                value={addReferrals ? addReferrals.CoinRewards : ""}
+                min={0}
+                // Update the value of the input with the corresponding user data
+                onChange={(e) =>
+                  setReferrals({ ...addReferrals, CoinRewards: e.target.value })
+                }
+              />
             </Form.Field>
           </Form>
         </Modal.Content>
         <Modal.Actions>
           <div className="text-right">
-              <Button color="blue" onClick={handleSaveEditRef}>
-                Save
-              </Button>
-              <Button color="gray" onClick={handleClose}>
-                close
-              </Button>
+            <Button color="blue" onClick={handleSaveEditRef}>
+              {addReferrals?.id === undefined ? "Save " : "Update"}
+            </Button>
+            <Button color="gray" onClick={handleClose}>
+              close
+            </Button>
           </div>
         </Modal.Actions>
       </Modal>
@@ -486,10 +516,10 @@ function Referrals() {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: "600px",
+          width: "450px",
           margin: "auto",
           maxHeight: "50%",
-          height:"auto",
+          height: "auto",
         }}
       >
         <Modal.Header>Delete Referrals</Modal.Header>

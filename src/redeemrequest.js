@@ -1,72 +1,86 @@
 import "semantic-ui-css/semantic.min.css";
 import React from "react";
-import { Dropdown } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Dropdown, Modal, Button } from "semantic-ui-react";
 import DashboardHeader from "./dashboardHeader";
 import TopHeader from "./topHeader";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import toastr from 'toastr';
+import 'toastr/build/toastr.css';
+
 
 const statusOptions = [
   { key: "approve", text: "Approve", value: "Approve" },
   { key: "pending", text: "Pending", value: "Pending" },
   { key: "decline", text: "Decline", value: "Decline" },
 ];
-function RedeemRequest() {
+function RedeemRequest()
+{
+  const navigate = useNavigate();
+  const apiUrl = "https://dev.nexmil.app";
   const [redeemRequests, setRedeemRequests] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
-
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const [redeemId, setRedeemId] = useState('');
+  // const [updatedResponse, setUpdatedResponse] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     fetchRedeemRequests();
-  },  [selectedStatus]);
+  }, []);
 
-  const fetchRedeemRequests = async () => {
-    try {
+  const fetchRedeemRequests = async () =>
+  {
+    try
+    {
+      setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await axios.get("https://dev.nexmil.app/redeemRequest", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setRedeemRequests(response.data);
-      setSelectedStatus(response.data[0].RequestStatus);
-    } catch (error) {
-      console.error("Error fetching redeem requests:", error);
+      const response = await axios.get(`${apiUrl}/redeemRequest`, { headers: { Authorization: `Bearer ${token}` } });
+      if (response.status === 200)
+      {
+        setRedeemRequests(response.data);
+        setLoading(false);
+      }
+    } catch (error)
+    {
+      if (error?.response != null && (error?.response?.status === 401 || error?.response?.status === 403))
+      {
+        toastr.error(`${error?.response.data.message ?? error?.response?.data}`, '', { timeOut: 1000 });
+        navigate("/Login");
+      }
     }
   };
-  // frontend.js
 
-  const handleStatusChange = async (redeem_Id, value) => {
-    try {
+  const handleStatusChange = (redeem_Id, value) =>
+  {
+    setRedeemId(redeem_Id);
+    setSelectedStatus(value);
+    setConfirmationModal(true);
+  };
+  const handleConfirmationModal = () =>
+  {
+    setConfirmationModal(false);
+  };
+
+  const handleSubmit = async () =>
+  {
+    try
+    {
+      setConfirmationModal(false);
       setLoading(true);
-      if (selectedStatus === "Approve" ) {
-      
-        setLoading(false);  
-        return;  
-      }
-  
-     
       const token = localStorage.getItem("token");
+      const response = await axios.put(`${apiUrl}/redeemRequest?redeem_Id=${redeemId}`, { Status: selectedStatus }, { headers: { Authorization: `Bearer ${token}` } });
 
-      const response = await axios.put(
-        `https://dev.nexmil.app/redeemRequest?redeem_Id=${redeem_Id}`,
-        {
-          Status: value,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    
-     
-
-      setSelectedStatus(value);
-      setLoading("");}
-    catch (error) {
+      if (response.status === 200)
+      {
+        setLoading(false);
+        fetchRedeemRequests();
+      }
+    }
+    catch (error)
+    {
       console.error("Error updating status:", error);
     }
   };
@@ -119,8 +133,8 @@ function RedeemRequest() {
                                       fluid
                                       selection
                                       options={statusOptions}
-                                      value={selectedStatus}
-                                       disabled={selectedStatus === "Approve"} 
+                                      value={request.RequestStatus}
+                                      disabled={request.RequestStatus === "Approve"}
                                       onChange={(event, data) =>
                                         handleStatusChange(
                                           request.id,
@@ -134,9 +148,6 @@ function RedeemRequest() {
                             ))}
                           </tbody>
                         </table>
-                        {loading && (
-                          <img src="Spinner-1s-200px.svg" alt="Loading" />
-                        )}
                       </div>
                     </div>
                   </div>
@@ -146,6 +157,47 @@ function RedeemRequest() {
           </div>
         </div>
       </div>
+      {loading && (
+        <div className="loader_content">
+          <img src="Spinner-1s-200px.svg" alt="Loading" />
+        </div>
+      )}
+      <Modal
+        open={confirmationModal}
+        onClose={handleConfirmationModal}
+        size="mini"
+        style={{
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "600px",
+          margin: "auto",
+          maxHeight: "70%",
+          height: "auto",
+        }}
+      >
+        {/* <div className="modal-header">
+          <span>{editingUser?.Id == null ? "Add New User " : "Edit User"}</span>
+          <button className="close_btn" onClick={handleClose} style={{ float: 'right' }}>
+            &times;
+          </button>
+        </div> */}
+
+        <Modal.Header>Confirm Status</Modal.Header>
+        <Modal.Content>
+          <p>Are you sure you want to change the status?</p>
+        </Modal.Content>
+        <Modal.Actions>
+          <div className="text-right">
+            <Button color="grey" onClick={handleConfirmationModal}>
+              Cancel
+            </Button>
+            <Button color="red" onClick={handleSubmit}>
+              Submit
+            </Button>
+          </div>
+        </Modal.Actions>
+      </Modal>
     </div>
   );
 }
